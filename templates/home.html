@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Fire visualisation{% endblock %}
+
+{% include 'navbar.html' %}
+{% include 'hero.html' %}
+
+{% block body %}
+
+<!-- Add Modal -->
+<!-- Button trigger modal -->
+<div class="w-75 container-fluid">
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+  Add New Data
+</button>
+    </div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <form action="{{ url_for('insert')}}" method="post">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Adding New Montlhy Data</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="w-100 p-3 d-flex flex-column justify-content-center" style="background-color: #eee;">
+    <div class="mb-3">
+        <label for="date" class="form-label">Please choose a date:</label>
+        <input type="date" id="date" name="date" aria-describedby="help" required>
+        <div id="help" class="form-text">Please chose first date of the month for uniformity</div>
+    </div>
+    <div class="mb-3">
+        <label for="axis" class="form-label">Axis</label>
+        <input type="number" class="form-control" id="axis" name="axis" required>
+    </div>
+    <div class="mb-3">
+        <label for="shares" class="form-label">Shares ISA</label>
+        <input type="number" class="form-control" id="shares" name="shares" required>
+    </div>
+    <div class="mb-3">
+        <label for="pension" class="form-label">Pension</label>
+        <input type="number" class="form-control" id="pension" name="pension" required>
+    </div>
+    <div class="mb-3">
+        <label for="axis" class="form-label">LISA</label>
+        <input type="number" class="form-control" id="lisa" name="lisa" required>
+    </div>
+</div>
+</div>
+            <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+      </div>
+        </form>
+    </div>
+  </div>
+</div>
+<!-- Add Modal ends -->
+
+<!-- flask messages-->
+    {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-warning alert-dismissible fade show w-75 mx-auto" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+    <!-- flash messages -->
+
+<!-- table -->
+<div class="w-75 mx-auto">
+    <div class="d-flex justify-content-center">
+        <table class="table" id="data">
+            <thead>
+            <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Axis</th>
+                <th scope="col">Shares ISA</th>
+                <th scope="col">Pension</th>
+                <th scope="col">LISA</th>
+                <th scope="col">Total</th>
+                <th scope="col">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for entry in entries %}
+            <tr>
+                <td>{{ entry.date }}</td>
+                <td>{{ entry.axis }}</td>
+                <td>{{ entry.shares }}</td>
+                <td>{{ entry.pension }}</td>
+                <td>{{ entry.lisa }}</td>
+                <td>{{ entry.total }}</td>
+                <td>
+                    <a href="/update/{{entry.id}}" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modaledit{{entry.id}}">Edit</a>
+                    <a href="/delete/{{entry.id}}" class="btn btn-secondary btn-sm" onclick="return confirm('Are You Sure To Delete ?')">Delete</a>
+                </td>
+            </tr>
+
+            <!-- edit modal -->
+<!-- Modal Edit Employee-->
+<div id="modaledit{{entry.id}}" class="modal fade" role="dialog">
+   <div class="modal-dialog">
+      <div class="modal-content">
+          <form action="{{url_for('update')}}" method="POST">
+         <div class="modal-header">
+            <h4 class="modal-title">Update Information for {{entry.date}}</h4>
+         </div>
+         <div class="modal-body">
+             <div class="w-100 p-3 d-flex flex-column justify-content-center" style="background-color: #eee;">
+               <div class="form-group">
+                   <input type="hidden"  name="id" value="{{entry.id}}">
+               </div>
+               <div class="form-group">
+                  <label>Axis:</label>
+                  <input type="number" class="form-control" name="axis" value="{{entry.axis}}" required>
+               </div>
+               <div class="form-group">
+                  <label>Shares ISA:</label>
+                  <input type="number" class="form-control" name="shares" value="{{entry.shares}}" required>
+               </div>
+                 <div class="form-group">
+                  <label>Pension:</label>
+                  <input type="number" class="form-control" name="pension" value="{{entry.pension}}" required>
+               </div>
+                 <div class="form-group">
+                  <label>LISA:</label>
+                  <input type="number" class="form-control" name="lisa" value="{{entry.lisa}}" required>
+               </div>
+             </div>
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+         </div>
+          </form>
+      </div>
+   </div>
+</div>
+
+            <!-- edit modal ends here -->
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+  <script>
+    $(document).ready(function () {
+      $('#data').DataTable({
+        columns: [
+          {orderable: true, searchable: true},
+          {orderable: true, searchable: false},
+          {orderable: true, searchable: false},
+          {orderable: true, searchable: false},
+          {orderable: true, searchable: false},
+          {orderable: true, searchable: false},
+          {orderable: false, searchable: false},
+          ],
+      });
+    });
+  </script>
+
+{% include 'footer.html' %}
+
+{% endblock %}
+
+

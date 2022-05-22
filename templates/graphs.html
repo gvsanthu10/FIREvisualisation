@@ -1,0 +1,32 @@
+
+{% extends "base2.html" %}
+
+{% block title %}Fire visualisation{% endblock %}
+
+{% include 'navbar.html' %}
+
+{% block body %}
+<div class="w-75 container-fluid d-flex">
+
+    <div class="container-fluid d-flex">
+  <div class="row">
+    <div class="col p-5">
+      {{ line_chart }}
+    </div>
+    <div class="col p-5">
+      {{ progress_chart }}
+    </div>
+  </div>
+        <div class="row p-5">
+    <div class="col">
+      {{ stacked_chart }}
+    </div>
+    <div class="col p-5">
+      {{ treemap }}
+    </div>
+  </div>
+    </div>
+</div>
+
+{% endblock %}
+
